@@ -34,9 +34,9 @@ TEST(myexpression, number_variable_op)
 	ASSERT_EQ(false, number(exp[1]));
 	ASSERT_EQ(false, number(exp[2]));
 
-	ASSERT_EQ(true, variable(exp[2]));
-	ASSERT_EQ(false, variable(exp[1]));
-	ASSERT_EQ(false, variable(exp[0]));
+	ASSERT_EQ(true, letter(exp[2]));
+	ASSERT_EQ(false, letter(exp[1]));
+	ASSERT_EQ(false, letter(exp[0]));
 
 	ASSERT_EQ(true, op(exp[1]));
 	ASSERT_EQ(false, op(exp[0]));
@@ -139,7 +139,7 @@ TEST(postfix_entry, can_convert)
 
 	exp = string("5*(-3+8)");
 	pe = exp; 
-	ASSERT_EQ(pe.get_postfix_entry(), "5 3 ^ 8 + *");
+	ASSERT_EQ(pe.get_postfix_entry(), "5 3 ~ 8 + *");
 }
 
 TEST(postfix_entry, can_calculate)

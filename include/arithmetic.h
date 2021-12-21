@@ -9,7 +9,7 @@
 using namespace std;
 
 const string operations = "+-*/";
-bool variable(char c);
+bool letter(char c);
 bool number(char c);
 bool op(char c);
 int operation_priority(const char c);
@@ -26,7 +26,6 @@ public:
 
 	bool correct() const;
 
-	string get_expression() const;
 	char operator [](size_t i) const;
 	size_t exp_size() const;
 
@@ -37,7 +36,7 @@ public:
 class postfix_entry
 {
 private:
-	myexpression pe;
+	string pe;
 
 	postfix_entry() = delete;
 public:

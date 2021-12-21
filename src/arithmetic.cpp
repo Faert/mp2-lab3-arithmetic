@@ -2,7 +2,7 @@
 
 #include "../include/arithmetic.h"
 
-bool variable(char c)
+bool letter(char c)
 {
 	if ((c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z'))
 	{
@@ -55,11 +55,6 @@ int operation_priority(const char c)
 	}
 }
 
-string myexpression::get_expression() const
-{
-	return exp;
-}
-
 char myexpression::operator [](size_t i) const
 {
 	return exp.at(i);
@@ -100,7 +95,7 @@ bool myexpression::correct() const
 			break;
 
 		case ')':
-			if (s.empty() || s.top() != "sl" || flag == "op")
+			if (s.empty() || s.top() != "sl" || flag == "op" || flag == "sl")
 			{
 				correct = false;
 				cout << i << " symbol: Incorrect parenthesis\n";
@@ -114,7 +109,7 @@ bool myexpression::correct() const
 			break;
 
 		case '.':
-			if (((flag != "n" && (i + 1 == exp.size() || !number(exp[i + 1]))) && flag != "op" && flag != "sl") || !dotflag)
+			if (((flag != "n" && (i + 1 == exp.size() || !number(exp[i + 1]))) && flag != "op" && flag != "sl") || flag == "v" || !dotflag)
 			{
 				correct = false;
 				cout << i << " symbol: Incorrect dot\n";
@@ -124,7 +119,7 @@ bool myexpression::correct() const
 			break;
 
 		default:
-			if (number(exp[i]) || variable(exp[i]) || op(exp[i]))
+			if (number(exp[i]) || letter(exp[i]) || op(exp[i]))
 			{
 				if (number(exp[i]))
 				{
@@ -135,7 +130,7 @@ bool myexpression::correct() const
 					}
 					flag = "n";
 				}
-				if (variable(exp[i]))
+				if (letter(exp[i]))
 				{
 					if (flag == "d" || flag == "sr" || flag == "n")
 					{
@@ -148,7 +143,7 @@ bool myexpression::correct() const
 				if (op(exp[i]))
 				{
 					if (flag == "op" || (exp[i] != '-' && flag == "sl") || (i + 1 == exp.size() || 
-						(!number(exp[i + 1]) && !variable(exp[i + 1]) && exp[i+1] != '(' && exp[i + 1] != '.')))
+						(!number(exp[i + 1]) && !letter(exp[i + 1]) && exp[i+1] != '(' && exp[i + 1] != '.')))
 					{
 						correct = false;
 						cout << i << " symbol: Incorrect operation\n";
@@ -196,10 +191,10 @@ postfix_entry::postfix_entry(const myexpression& exp_)
 		stack <char> st(exp_.exp_size());
 		for (size_t i = 0; i < exp_.exp_size(); i++)
 		{
-			if (variable(exp_[i]) || number(exp_[i]) || exp_[i] == '.')
+			if (letter(exp_[i]) || number(exp_[i]) || exp_[i] == '.')
 			{
 				out.push_back(exp_[i]);
-				if (i + 1 == exp_.exp_size() || ((variable(exp_[i]) && !variable(exp_[i + 1])) ||
+				if (i + 1 == exp_.exp_size() || ((letter(exp_[i]) && !letter(exp_[i + 1])) ||
 					(number(exp_[i]) && !number(exp_[i + 1]) && exp_[i + 1] != '.') || (exp_[i] == '.' && !number(exp_[i + 1]))))
 				{
 					out.push_back(' ');
@@ -212,7 +207,7 @@ postfix_entry::postfix_entry(const myexpression& exp_)
 
 			if (exp_[i] == '-' && flag)
 			{
-				st.push('^');
+				st.push('~');
 			}
 
 			if (exp_[i] == ')')
@@ -226,7 +221,7 @@ postfix_entry::postfix_entry(const myexpression& exp_)
 			}
 			if (op(exp_[i]) && !(exp_[i] == '-' && flag))
 			{
-				while (!st.empty() && ((st.top() == '^') ||
+				while (!st.empty() && ((st.top() == '~') ||
 					(op(st.top()) && operation_priority(exp_[i]) >= operation_priority(st.top()))))
 				{
 					out.push_back(st.pop());
@@ -267,13 +262,13 @@ double postfix_entry::computation()
 	string var;
 	char check;
 
-	for (size_t i = 0; i < pe.exp_size(); i++)
+	for (size_t i = 0; i < pe.size(); i++)
 	{
-		if (variable(pe[i]))
+		if (letter(pe[i]))
 		{
 			var.push_back(pe[i]);
 		}
-		if (pe[i] == ' ' || i + 1 == pe.exp_size())
+		if (pe[i] == ' ' || (letter(pe[i]) && i + 1 == pe.size()))
 		{
 			dotflag = 0;
 			flagn = false;
@@ -318,7 +313,7 @@ double postfix_entry::computation()
 		}
 		if (pe[i] == '.')
 		{
-			if ((i == 0 || !number(pe[i - 1])) && (i + 1 == pe.exp_size() || !number(pe[i + 1])))
+			if ((i == 0 || !number(pe[i - 1])))
 			{
 				dst.push(0.0);
 			}
@@ -328,7 +323,7 @@ double postfix_entry::computation()
 
 		switch (pe[i])
 		{
-		case '^':
+		case '~':
 			temp = -(dst.pop());
 			dst.push(temp);
 			break;
@@ -363,7 +358,7 @@ double postfix_entry::computation()
 
 string postfix_entry::get_postfix_entry() const
 {
-	return pe.get_expression();
+	return pe;
 }
 
 ostream& operator<<(ostream& out, const postfix_entry& exp_)

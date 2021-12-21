@@ -35,7 +35,7 @@ int main()
 		if (choice == '1')
 		{
 			postfix_entry pe(exp);
-			cout << "Reverse Polish entry(^ - unary minus): " << pe << '\n';
+			cout << "Reverse Polish entry(~ - unary minus): " << pe << '\n';
 			cout << "Calculate the expression?: 1 - Yes, 2 - No\n";
 			cin >> choice;
 
