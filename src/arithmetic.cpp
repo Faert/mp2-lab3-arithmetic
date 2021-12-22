@@ -142,8 +142,8 @@ bool myexpression::correct() const
 				}
 				if (op(exp[i]))
 				{
-					if (flag == "op" || (exp[i] != '-' && flag == "sl") || (i + 1 == exp.size() || 
-						(!number(exp[i + 1]) && !letter(exp[i + 1]) && exp[i+1] != '(' && exp[i + 1] != '.')))
+					if ((flag == "op" && (exp[i] != '-' || exp[i-1] == '-')) || (exp[i] != '-' && flag == "sl") || (i + 1 == exp.size() ||
+						(!number(exp[i + 1]) && !letter(exp[i + 1]) && exp[i+1] != '(' && exp[i + 1] != '.' && exp[i+1] != '-')))
 					{
 						correct = false;
 						cout << i << " symbol: Incorrect operation\n";
@@ -229,7 +229,7 @@ postfix_entry::postfix_entry(const myexpression& exp_)
 				}
 				st.push(exp_[i]);
 			}
-			if (exp_[i] == '(')
+			if (exp_[i] == '(' || (op(exp_[i]) && exp_[i] != '-'))
 			{
 				flag = true;
 			}
@@ -256,10 +256,13 @@ double postfix_entry::computation()
 {
 	size_t dotflag = 0;
 	bool flagn = false;
+	bool flagvar = false;
 
 	stack <double> dst;
 	double temp;
 	string var;
+	vector <string> allvar;
+	vector <double> allvardata;
 	char check;
 
 	for (size_t i = 0; i < pe.size(); i++)
@@ -272,13 +275,24 @@ double postfix_entry::computation()
 		{
 			dotflag = 0;
 			flagn = false;
-			if (var != "")
+			flagvar = false;
+			for (size_t j = 0; j < allvar.size(); j++)
 			{
+				if (var == allvar[j])
+				{
+					flagvar = true;
+					dst.push(allvardata[j]);
+				}
+			}
+			if (var != "" && !flagvar)
+			{
+				allvar.push_back(var);
 				cout << "Do you want to enter the value of a variable " << var << "?: 1 - Yes, 2 - No\n";
 				cin >> check;
 				if (check == '1')
 				{
 					cin >> temp;
+					allvardata.push_back(temp);
 					dst.push(temp);
 				}
 				else
