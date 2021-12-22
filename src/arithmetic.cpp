@@ -291,7 +291,14 @@ double postfix_entry::computation()
 				cin >> check;
 				if (check == '1')
 				{
-					cin >> temp;
+					while (!(cin >> temp) || cin.peek() != '\n')
+					{
+						cin.clear();
+						while (cin.get() != '\n');
+						{
+							cout << "Incorrect input!\n";
+						}
+					}
 					allvardata.push_back(temp);
 					dst.push(temp);
 				}
