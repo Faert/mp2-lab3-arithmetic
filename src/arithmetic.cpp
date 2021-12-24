@@ -142,7 +142,8 @@ bool myexpression::correct() const
 				}
 				if (op(exp[i]))
 				{
-					if ((flag == "op" && (exp[i] != '-' || exp[i-1] == '-')) || (exp[i] != '-' && flag == "sl") || (i + 1 == exp.size() ||
+					if ((flag == "op" && (exp[i] != '-' || (!number(exp[i+1]) && !letter(exp[i + 1])))) ||
+						(exp[i] != '-' && flag == "sl") || (i + 1 == exp.size() ||
 						(!number(exp[i + 1]) && !letter(exp[i + 1]) && exp[i+1] != '(' && exp[i + 1] != '.' && exp[i+1] != '-')))
 					{
 						correct = false;
@@ -229,7 +230,7 @@ postfix_entry::postfix_entry(const myexpression& exp_)
 				}
 				st.push(exp_[i]);
 			}
-			if (exp_[i] == '(' || (op(exp_[i]) && exp_[i] != '-'))
+			if (exp_[i] == '(' || (op(exp_[i]) && exp_[i+1] == '-'))
 			{
 				flag = true;
 			}
@@ -263,7 +264,6 @@ double postfix_entry::computation()
 	string var;
 	vector <string> allvar;
 	vector <double> allvardata;
-	char check;
 
 	for (size_t i = 0; i < pe.size(); i++)
 	{
@@ -287,26 +287,17 @@ double postfix_entry::computation()
 			if (var != "" && !flagvar)
 			{
 				allvar.push_back(var);
-				cout << "Do you want to enter the value of a variable " << var << "?: 1 - Yes, 2 - No\n";
-				cin >> check;
-				if (check == '1')
+				cout << "Enter the value of the variable " << var << " :\n";
+				while (!(cin >> temp) || cin.peek() != '\n')
 				{
-					while (!(cin >> temp) || cin.peek() != '\n')
+					cin.clear();
+					while (cin.get() != '\n');
 					{
-						cin.clear();
-						while (cin.get() != '\n');
-						{
-							cout << "Incorrect input!\n";
-						}
+						cout << "Incorrect input!\n";
 					}
-					allvardata.push_back(temp);
-					dst.push(temp);
 				}
-				else
-				{
-					cout << "Variables in expression\n";
-					return 0;
-				}
+				allvardata.push_back(temp);
+				dst.push(temp);
 			}
 			var.clear();
 		}
