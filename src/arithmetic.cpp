@@ -142,7 +142,7 @@ bool myexpression::correct() const
 				}
 				if (op(exp[i]))
 				{
-					if ((flag == "op" && (exp[i] != '-' || (!number(exp[i+1]) && !letter(exp[i + 1])))) ||
+					if ((flag == "op" && (exp[i] != '-' || (!number(exp[i+1]) && !letter(exp[i + 1]) && exp[i+1] != '-'))) ||
 						(exp[i] != '-' && flag == "sl") || (i + 1 == exp.size() ||
 						(!number(exp[i + 1]) && !letter(exp[i + 1]) && exp[i+1] != '(' && exp[i + 1] != '.' && exp[i+1] != '-')))
 					{
